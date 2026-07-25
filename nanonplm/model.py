@@ -1,3 +1,4 @@
+from typing import Self
 from pathlib import Path
 
 import torch 
@@ -14,7 +15,7 @@ class ModelConfig():
     vocab: int = 4096 
      
 class Model(nn.Module): 
-    def __init__(self, config: ModelConfig):
+    def __init__(self, config: ModelConfig, vocab_table: dict = dict()):
         super().__init__()
         self.config = config 
         self.embed = nn.Embedding(
@@ -31,6 +32,7 @@ class Model(nn.Module):
             out_features=self.config.vocab, 
             bias=True
         ) 
+        self.vocab_table = vocab_table
 
         self.apply(self._init_weights)
 
@@ -80,6 +82,18 @@ class Model(nn.Module):
 
         return sampled 
 
-    def load(self, path: Path): 
-        ckpt = torch.load(path)
+    def _load(self, ckpt_path: Path): 
+        ckpt = torch.load(ckpt_path)
         self.load_state_dict(ckpt["model"])
+    
+    @classmethod
+    def from_pretrained(cls, ckpt_path: Path) -> Self:
+        ckpt = torch.load(ckpt_path)
+        model = cls(
+            config=ModelConfig(**ckpt['model_cfg']), 
+            vocab=ckpt['vocab_table']
+        )
+        model.load_state_dict(ckpt['model'])
+
+        return model 
+    

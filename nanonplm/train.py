@@ -24,9 +24,11 @@ def _get_sample(tokens: list[str], n: int, vocab_table: dict) -> tuple[torch.Ten
 
     return x_ids, y_ids 
 
-def _save_ckpt(model_state_dict: dict, ckpt_path: Path):
+def _save_ckpt(model_state_dict: dict, vocab_table: dict, model_cfg: dict, ckpt_path: Path):
     ckpt = {
-        'model': model_state_dict
+        'model': model_state_dict,
+        'vocab_table': vocab_table, 
+        'model_cfg': model_cfg
     }
     torch.save(ckpt, ckpt_path)
 
@@ -106,5 +108,10 @@ if __name__ == '__main__':
 
         if (i % ckpt_save_step == 0 and i != 0) or (i == steps-1): 
             ckpt_path = ckpt_dir / Path(f'ckpt{i}.pt')
-            _save_ckpt(model.state_dict(), ckpt_path)
+            _save_ckpt(
+                model_state_dict=model.state_dict(), 
+                vocab_table=vocab_lookup_table,
+                model_cfg=cfg.__dict__(),
+                ckpt_path=ckpt_path
+            )
             print(f"saved ckpt at: {ckpt_path}")
