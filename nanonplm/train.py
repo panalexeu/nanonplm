@@ -44,11 +44,11 @@ if __name__ == '__main__':
     
     # model/training config 
     lr = 10e-3
-    steps = 1_738_070 # 5 ~epochs over (1042842 / 3 (trigram))
-    log_step = 100
+    steps = 1_042_842 # 3 ~epochs over (1042842 / 3 (trigram))
+    log_step = 1000
     seed = 42 
     decay = 10e-5
-    ema_alpha = 0.01  # avgs loss over ~100 steps 
+    ema_alpha = 0.001  # avgs loss over ~1000 steps 
     n = 2 # trigram 
     device_type = "cuda" # "cpu"
     cfg = ModelConfig(
@@ -59,6 +59,9 @@ if __name__ == '__main__':
     )
     device = torch.device(device_type)
     model = Model(config=cfg).to(device)
+    # # compilation makes dt actually slower 
+    # torch.set_float32_matmul_precision('high')
+    # model = torch.compile(model)
     random.seed(seed)
 
     # info
@@ -87,4 +90,4 @@ if __name__ == '__main__':
             dt = t1 - t0 
             t0 = t1 
 
-            print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}) {ema_loss:.4f}, dt {dt:.2f}s")
+            print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s")
