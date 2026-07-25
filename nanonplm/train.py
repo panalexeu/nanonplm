@@ -44,7 +44,7 @@ if __name__ == '__main__':
     tokenizer = BaseTokenizer()
 
     texts = preproc_.__call__()
-    res = '\n'.join(texts) # join texts into one string
+    res = preproc_.join(texts) # join texts into one string
     tokens = tokenizer.__call__(res)
     vocab = set(tokens) 
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
