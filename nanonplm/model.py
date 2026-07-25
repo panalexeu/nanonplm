@@ -56,6 +56,18 @@ class Model(nn.Module):
             loss = F.cross_entropy(input=x, target=target)
 
         return x, loss
+    
+    def sample(self, x: torch.Tensor, stop_seq: list[int]): 
+        # for now just greedy decoding 
+        sampled = []
+        while True: 
+            probs = F.softmax(self.__call__(x, target=None))
+            top_prob = probs.argmax(dim=-1)
+            if top_prob in stop_seq: 
+                break
 
-    def sample(): 
-        pass
+            sampled.append(top_prob)
+            x = torch.tensor(x[1:] + [top_prob])
+
+        return sampled 
+    
