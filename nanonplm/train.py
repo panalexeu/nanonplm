@@ -47,7 +47,7 @@ if __name__ == '__main__':
     tokenizer = BaseTokenizer()
 
     texts = preproc_.__call__()
-    res = preproc_.join(texts) # join texts into one string
+    res = '\n'.join(texts) # join texts into one string
     tokens = tokenizer.__call__(res)
     vocab = set(tokens) 
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
@@ -67,7 +67,7 @@ if __name__ == '__main__':
         n=n, 
         embed=32,
         hidden=64,
-        vocab=85_575
+        vocab=len(vocab)
     )
     device = torch.device(device_type)
     model = Model(config=cfg).to(device)
