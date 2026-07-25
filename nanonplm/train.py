@@ -2,6 +2,7 @@
 the training loop implementation (and model implementation too) 
 uses SGD (no batching) as it was done in the paper. 
 """
+import time 
 import random
 import argparse 
 from pathlib import Path 
@@ -49,13 +50,15 @@ if __name__ == '__main__':
     decay = 10e-5
     ema_alpha = 0.01  # avgs loss over ~100 steps 
     n = 2 # trigram 
+    device_type = "cuda" # "cpu"
     cfg = ModelConfig(
         n=n, 
         embed=32,
         hidden=64,
         vocab=85_575
     )
-    model = Model(config=cfg)
+    device = torch.device(device_type)
+    model = Model(config=cfg).to(device)
     random.seed(seed)
 
     # info
@@ -69,14 +72,19 @@ if __name__ == '__main__':
     ema = lambda loss, ema_loss: ema_alpha*loss + (1-ema_alpha)*ema_loss 
     ema_loss = None
     optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=decay)
+    t0 = time.perf_counter()
     for i in range(0, steps): 
         optimizer.zero_grad()
         x_ids, y_ids = _get_sample(tokens, n, vocab_lookup_table)
+        x_ids, y_ids = x_ids.to(device), y_ids.to(device)
         _, loss = model.__call__(x_ids, y_ids)
         ema_loss = ema(loss.item(), ema_loss if ema_loss else loss.item())
         loss.backward() 
         optimizer.step()
 
         if i % log_step == 0: 
-            print(f"step: {i}, train loss {loss.item()}, ema loss {ema_loss}")
-        
+            t1 = time.perf_counter()
+            dt = t1 - t0 
+            t0 = t1 
+
+            print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}) {ema_loss:.4f}, dt {dt:.2f}s")
