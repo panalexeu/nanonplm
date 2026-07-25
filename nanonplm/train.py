@@ -44,9 +44,10 @@ if __name__ == '__main__':
     # model/training config 
     lr = 10e-3
     steps = 1_738_070 # 5 ~epochs over (1042842 / 3 (trigram))
-    log_step = 1000
+    log_step = 100
     seed = 42 
     decay = 10e-5
+    ema_alpha = 0.01  # avgs loss over ~100 steps 
     n = 2 # trigram 
     cfg = ModelConfig(
         n=n, 
@@ -65,14 +66,17 @@ if __name__ == '__main__':
     print("--------------------------")
 
     # training loop 
+    ema = lambda loss, ema_loss: ema_alpha*loss + (1-ema_alpha)*ema_loss 
+    ema_loss = None
     optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=decay)
     for i in range(0, steps): 
         optimizer.zero_grad()
         x_ids, y_ids = _get_sample(tokens, n, vocab_lookup_table)
         _, loss = model.__call__(x_ids, y_ids)
+        ema_loss = ema(loss.item(), ema_loss if ema_loss else loss.item())
         loss.backward() 
         optimizer.step()
 
         if i % log_step == 0: 
-            print(f"step: {i}, train loss {loss}")
+            print(f"step: {i}, train loss {loss.item()}, ema loss {ema_loss}")
         
