@@ -56,3 +56,6 @@ class Model(nn.Module):
             loss = F.cross_entropy(input=x, target=target)
 
         return x, loss
+
+    def sample(): 
+        pass
