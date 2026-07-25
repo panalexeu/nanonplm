@@ -60,21 +60,26 @@ class Model(nn.Module):
         return x, loss
 
 
-    def sample(self, x: torch.Tensor, stop_seq: list[int]): 
+    def sample(
+        self, 
+        x: torch.Tensor,
+        max_tokens: int, 
+        stop_seq: list[int] = []
+    ): 
         # for now just greedy decoding 
         sampled = []
-        while True: 
-            probs = F.softmax(self.__call__(x, target=None))
+        for _ in range(max_tokens): 
+            y = self.__call__(x, target=None)[0]
+            probs = F.softmax(y, dim=-1)
             top_prob = probs.argmax(dim=-1)
             if top_prob in stop_seq: 
                 break
 
-            sampled.append(top_prob)
-            x = torch.tensor(x[1:] + [top_prob])
+            sampled.extend(top_prob.tolist())
+            x = torch.tensor(x[1:].tolist() + [top_prob])
 
         return sampled 
 
-    def from_pretrained(self, path: Path): 
+    def load(self, path: Path): 
         ckpt = torch.load(path)
         self.load_state_dict(ckpt["model"])
-        
