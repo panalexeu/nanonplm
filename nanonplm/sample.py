@@ -2,6 +2,7 @@ import torch
 import argparse 
 from pathlib import Path
 
+from .tokenizer import BaseTokenizer
 from .model import Model, ModelConfig
 
 if __name__ == '__main__':
@@ -11,8 +12,17 @@ if __name__ == '__main__':
 
     ckpt_path = Path(args.ckpt_path) 
     model = Model.from_pretrained(ckpt_path)
+    tokenizer = BaseTokenizer()
 
-    ids = model.sample(x=torch.tensor([0, 1]), max_tokens=6)
+    input = "<s> hello"
+    tokens = tokenizer.__call__(input)
+    input_ids = torch.tensor([model.vocab_table[t] for t in tokens])
+    out_ids = model.sample(x=input_ids, max_tokens=6)
     vocab_tokens = list(model.vocab_table.keys())
-    sampled_tokens = [vocab_tokens[id] for id in ids]
-    print(' '.join(sampled_tokens))
+    sampled_tokens = [vocab_tokens[id] for id in out_ids]
+
+    print(input)
+    print(tokens)
+    print(input_ids)
+    print(out_ids)
+    print(''.join(sampled_tokens))

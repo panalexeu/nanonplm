@@ -77,7 +77,7 @@ class Model(nn.Module):
             if top_prob in stop_seq: 
                 break
 
-            sampled.extend(top_prob.tolist())
+            sampled.append(top_prob)
             x = torch.tensor(x[1:].tolist() + [top_prob])
 
         return sampled 
@@ -85,13 +85,13 @@ class Model(nn.Module):
     def _load(self, ckpt_path: Path): 
         ckpt = torch.load(ckpt_path)
         self.load_state_dict(ckpt["model"])
-    
+
     @classmethod
     def from_pretrained(cls, ckpt_path: Path) -> Self:
         ckpt = torch.load(ckpt_path)
         model = cls(
             config=ModelConfig(**ckpt['model_cfg']), 
-            vocab=ckpt['vocab_table']
+            vocab_table=ckpt['vocab_table']
         )
         model.load_state_dict(ckpt['model'])
 

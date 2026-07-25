@@ -5,8 +5,9 @@ uses SGD (no batching) as it was done in the paper.
 import os 
 import time 
 import random
-import argparse 
+import argparse
 from pathlib import Path 
+from dataclasses import asdict
 
 import torch 
 import torch.optim as optim 
@@ -111,7 +112,7 @@ if __name__ == '__main__':
             _save_ckpt(
                 model_state_dict=model.state_dict(), 
                 vocab_table=vocab_lookup_table,
-                model_cfg=cfg.__dict__(),
+                model_cfg=asdict(cfg),
                 ckpt_path=ckpt_path
             )
             print(f"saved ckpt at: {ckpt_path}")
