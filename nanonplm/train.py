@@ -2,6 +2,7 @@
 the training loop implementation (and model implementation too) 
 uses SGD (no batching) as it was done in the paper. 
 """
+import os 
 import time 
 import random
 import argparse 
@@ -22,6 +23,12 @@ def _get_sample(tokens: list[str], n: int, vocab_table: dict) -> tuple[torch.Ten
     y_ids =  torch.tensor(vocab_table[y], dtype=torch.long)
 
     return x_ids, y_ids 
+
+def _save_ckpt(model_state_dict: dict, ckpt_path: Path):
+    ckpt = {
+        'model': model_state_dict
+    }
+    torch.save(ckpt, ckpt_path)
 
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser(description="tg ingestion pipeline: cnv preprocessing -> neural prob. language model training")
@@ -45,7 +52,9 @@ if __name__ == '__main__':
     # model/training config 
     lr = 10e-3
     steps = 1_042_842 # 3 ~epochs over (1042842 / 3 (trigram))
-    log_step = 1000
+    log_step = 1_000
+    ckpt_save_step = 100_000
+    ckpt_dir = Path('./out')
     seed = 42 
     decay = 10e-5
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
@@ -71,6 +80,9 @@ if __name__ == '__main__':
     print(f"data tokens: {len(tokens)}")
     print("--------------------------")
 
+    if not ckpt_dir.exists(): 
+        os.mkdir(ckpt_dir)
+
     # training loop 
     ema = lambda loss, ema_loss: ema_alpha*loss + (1-ema_alpha)*ema_loss 
     ema_loss = None
@@ -91,3 +103,8 @@ if __name__ == '__main__':
             t0 = t1 
 
             print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s")
+
+        if i % ckpt_save_step == 0 and i != 0: 
+            ckpt_path = ckpt_dir / Path(f'ckpt{i}.pt')
+            _save_ckpt(model.state_dict(), ckpt_path)
+            print(f"saved ckpt at: {ckpt_path}")
