@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import torch 
 import torch.nn as nn 
 import torch.nn.functional as F 
@@ -56,7 +58,8 @@ class Model(nn.Module):
             loss = F.cross_entropy(input=x, target=target)
 
         return x, loss
-    
+
+
     def sample(self, x: torch.Tensor, stop_seq: list[int]): 
         # for now just greedy decoding 
         sampled = []
@@ -70,4 +73,8 @@ class Model(nn.Module):
             x = torch.tensor(x[1:] + [top_prob])
 
         return sampled 
-    
+
+    def from_pretrained(self, path: Path): 
+        ckpt = torch.load(path)
+        self.load_state_dict(ckpt["model"])
+        
