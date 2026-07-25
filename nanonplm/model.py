@@ -49,7 +49,7 @@ class Model(nn.Module):
         x = self.embed(x)
         x = x.reshape(-1)
         x = F.tanh(self.up_proj(x)) 
-        x = self.up_proj(x) # logits 
+        x = self.out_proj(x) 
 
         loss = None 
         if target is not None: 
