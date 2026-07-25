@@ -18,7 +18,7 @@ from .tokenizer import BaseTokenizer
 
 def _get_sample(tokens: list[str], n: int, vocab_table: dict) -> tuple[torch.Tensor, torch.Tensor]:
     idx = random.randint(0, len(tokens)-n)
-    x, y = tokens[idx:idx+2], tokens[idx+2]
+    x, y = tokens[idx:idx+n], tokens[idx+n]
     x_ids = torch.tensor([vocab_table[t] for t in x], dtype=torch.int)
     y_ids =  torch.tensor(vocab_table[y], dtype=torch.long)
 
