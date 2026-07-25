@@ -104,7 +104,7 @@ if __name__ == '__main__':
 
             print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s")
 
-        if i % ckpt_save_step == 0 and i != 0: 
+        if (i % ckpt_save_step == 0 and i != 0) or (i == steps-1): 
             ckpt_path = ckpt_dir / Path(f'ckpt{i}.pt')
             _save_ckpt(model.state_dict(), ckpt_path)
             print(f"saved ckpt at: {ckpt_path}")
