@@ -14,10 +14,10 @@ if __name__ == '__main__':
     model = Model.from_pretrained(ckpt_path)
     tokenizer = BaseTokenizer()
 
-    input = "<s> hello"
+    input = "to be"
     tokens = tokenizer.__call__(input)
     input_ids = torch.tensor([model.vocab_table[t] for t in tokens])
-    out_ids = model.sample(x=input_ids, max_tokens=6)
+    out_ids = model.sample(x=input_ids, max_tokens=64)
     vocab_tokens = list(model.vocab_table.keys())
     sampled_tokens = [vocab_tokens[id] for id in out_ids]
 

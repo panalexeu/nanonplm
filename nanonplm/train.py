@@ -54,7 +54,7 @@ if __name__ == '__main__':
     
     # model/training config 
     lr = 1e-3
-    steps = 297_832 # 3 ~epochs over (297_832 / 3 (trigram))
+    steps = 1_000_000 # 10 ~epochs over (297_832 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')

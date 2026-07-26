@@ -22,7 +22,7 @@ class Model(nn.Module):
             num_embeddings=self.config.vocab, 
             embedding_dim=self.config.embed, 
         )
-        self.up_proj = nn.Linear(
+        self.down_proj = nn.Linear(
             in_features=self.config.embed * self.config.n, 
             out_features=self.config.hidden, 
             bias=True 
@@ -52,7 +52,7 @@ class Model(nn.Module):
 
         x = self.embed(x)
         x = x.reshape(-1)
-        x = F.tanh(self.up_proj(x)) 
+        x = F.tanh(self.down_proj(x)) 
         x = self.out_proj(x) 
 
         loss = None 
