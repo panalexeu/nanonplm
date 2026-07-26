@@ -82,6 +82,7 @@ if __name__ == '__main__':
     print(f"vocab size: {len(vocab)}")
     print(f"data tokens: {len(tokens)}")
     print("--------------------------")
+    print("press Enter to start training: ")
 
     if not ckpt_dir.exists(): 
         os.mkdir(ckpt_dir)
