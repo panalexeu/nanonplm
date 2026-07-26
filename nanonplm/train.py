@@ -13,7 +13,7 @@ import torch
 import torch.optim as optim 
 
 from .model import ModelConfig, Model
-from .preproc import TgPreporcStrategy
+from .data import TgDataLoadStrategy, TinyShaekspereDataLoadStrategy
 from .tokenizer import BaseTokenizer
 
 
@@ -34,21 +34,21 @@ def _save_ckpt(model_state_dict: dict, vocab_table: dict, model_cfg: dict, ckpt_
     torch.save(ckpt, ckpt_path)
 
 if __name__ == '__main__': 
-    parser = argparse.ArgumentParser(description="tg ingestion pipeline: cnv preprocessing -> neural prob. language model training")
-    parser.add_argument("user_id", type=str)
-    parser.add_argument("cnv_path", type=str) 
+    parser = argparse.ArgumentParser(description="data ingestion pipeline: preprocessing -> neural prob. language model training")
+    parser.add_argument("--user_id", type=str, default=None)
+    parser.add_argument("--data_dir", type=str, default='./data') 
     parser.add_argument("--preproc_export_path", type=str, default='./out.txt')
     args = parser.parse_args() 
 
-    preproc_ = TgPreporcStrategy(
-        path=Path(args.cnv_path), 
-        id_=args.user_id 
-    )
+    # preproc_ = TgDataLoadStrategy(
+    #     data_dir=Path(args.data_dir), 
+    #     id_=args.user_id 
+    # )
+    preproc_ = TinyShaekspereDataLoadStrategy(data_dir=args.data_dir)
     tokenizer = BaseTokenizer()
 
-    texts = preproc_.__call__()
-    res = '\n'.join(texts) # join texts into one string
-    tokens = tokenizer.__call__(res)
+    text = preproc_.__call__()
+    tokens = tokenizer.__call__(text)
     vocab = set(tokens) 
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
