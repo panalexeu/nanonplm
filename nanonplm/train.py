@@ -53,21 +53,22 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
+    # basically repeats config for:MLP9 (table 1), Brown
     lr = 1e-2
     r = 1e-7
-    steps = 3_000_000 # 30 ~epochs over (297_832 / 3 (trigram))
+    steps = 1_200_00 # 20 ~epochs over (297_832 / 5 (6gram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
     seed = 42 
-    decay = 1e-4
+    decay = 1e-3
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
-    n = 2 # trigram 
+    n = 5 # 6gram 
     device_type = "cuda" # "cpu"
     cfg = ModelConfig(
         n=n, 
-        embed=32,
-        hidden=64,
+        embed=30,
+        hidden=100,
         vocab=len(vocab)
     )
     device = torch.device(device_type)
