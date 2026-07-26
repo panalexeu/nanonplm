@@ -56,7 +56,7 @@ if __name__ == '__main__':
     # basically repeats config for:MLP9 (table 1), Brown
     lr = 1e-2
     r = 1e-7
-    steps = 1_200_00 # 20 ~epochs over (297_832 / 5 (6gram))
+    steps = 1_000_000 # 20 ~epochs over (297_832 / 6 (6gram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
