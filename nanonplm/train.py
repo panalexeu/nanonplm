@@ -53,7 +53,8 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
-    lr = 1e-3
+    lr = 1e-2
+    r = 1e-7
     steps = 3_000_000 # 30 ~epochs over (297_832 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
@@ -94,6 +95,7 @@ if __name__ == '__main__':
     optimizer = model.configure_optimizer(lr=lr, weight_decay=decay)
     t0 = time.perf_counter()
     for i in range(0, steps): 
+        # fwd pass 
         optimizer.zero_grad()
         x_ids, y_ids = _get_sample(tokens, n, vocab_lookup_table)
         x_ids, y_ids = x_ids.to(device), y_ids.to(device)
@@ -102,6 +104,12 @@ if __name__ == '__main__':
         loss.backward() 
         optimizer.step()
 
+        # lr update schedule
+        new_lr = lr/(1 + r*i)
+        for g in optimizer.param_groups:
+            g['lr'] = new_lr
+
+        # logging 
         if i % log_step == 0: 
             t1 = time.perf_counter()
             dt = t1 - t0 
@@ -109,6 +117,7 @@ if __name__ == '__main__':
 
             print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s")
 
+        # save ckpt 
         if (i % ckpt_save_step == 0 and i != 0) or (i == steps-1): 
             ckpt_path = ckpt_dir / Path(f'ckpt{i}.pt')
             _save_ckpt(
