@@ -96,6 +96,11 @@ if __name__ == '__main__':
     optimizer = model.configure_optimizer(lr=lr, weight_decay=decay)
     t0 = time.perf_counter()
     for i in range(0, steps): 
+        # lr update
+        new_lr = lr/(1 + r*i)
+        for g in optimizer.param_groups:
+            g['lr'] = new_lr
+
         # fwd pass 
         optimizer.zero_grad()
         x_ids, y_ids = _get_sample(tokens, n, vocab_lookup_table)
@@ -104,11 +109,6 @@ if __name__ == '__main__':
         ema_loss = ema(loss.item(), ema_loss if ema_loss else loss.item())
         loss.backward() 
         optimizer.step()
-
-        # lr update schedule
-        new_lr = lr/(1 + r*i)
-        for g in optimizer.param_groups:
-            g['lr'] = new_lr
 
         # logging 
         if i % log_step == 0: 
