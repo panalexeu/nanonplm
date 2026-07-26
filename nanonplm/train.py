@@ -53,20 +53,20 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
-    lr = 1e-2
-    steps = 1_042_842 # 3 ~epochs over (1042842 / 3 (trigram))
+    lr = 1e-3
+    steps = 297_832 # 3 ~epochs over (297_832 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
     seed = 42 
-    decay = 1e-4
+    decay = 1e-5
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
     n = 2 # bigram 
     device_type = "cuda" # "cpu"
     cfg = ModelConfig(
         n=n, 
         embed=32,
-        hidden=64,
+        hidden=96,
         vocab=len(vocab)
     )
     device = torch.device(device_type)
