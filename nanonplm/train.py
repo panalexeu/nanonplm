@@ -66,7 +66,7 @@ if __name__ == '__main__':
     cfg = ModelConfig(
         n=n, 
         embed=32,
-        hidden=96,
+        hidden=64,
         vocab=len(vocab)
     )
     device = torch.device(device_type)
