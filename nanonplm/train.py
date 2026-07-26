@@ -44,7 +44,7 @@ if __name__ == '__main__':
     #     data_dir=Path(args.data_dir), 
     #     id_=args.user_id 
     # )
-    preproc_ = TinyShaekspereDataLoadStrategy(data_dir=args.data_dir)
+    preproc_ = TinyShaekspereDataLoadStrategy(data_dir=Path(args.data_dir))
     tokenizer = BaseTokenizer()
 
     text = preproc_.__call__()
@@ -53,13 +53,13 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
-    lr = 1e-4
+    lr = 1e-2
     steps = 1_042_842 # 3 ~epochs over (1042842 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
     seed = 42 
-    decay = 10e-6
+    decay = 1e-4
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
     n = 2 # bigram 
     device_type = "cuda" # "cpu"
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # torch.set_float32_matmul_precision('high')
     # model = torch.compile(model)
     random.seed(seed)
-    torch.random.seed(seed)
+    torch.manual_seed(seed)
 
     # info
     print("--------------------------")

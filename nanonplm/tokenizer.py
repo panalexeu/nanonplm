@@ -1,7 +1,5 @@
 import re 
 
-from .data import START_SEQ, END_SEQ
-
 class BaseTokenizer:
     """
     regexp tokenizer with modified gpt2 expr to work with re
