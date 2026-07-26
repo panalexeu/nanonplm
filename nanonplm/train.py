@@ -75,6 +75,7 @@ if __name__ == '__main__':
     # torch.set_float32_matmul_precision('high')
     # model = torch.compile(model)
     random.seed(seed)
+    torch.random.seed(seed)
 
     # info
     print("--------------------------")
