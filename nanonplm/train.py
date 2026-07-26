@@ -61,7 +61,7 @@ if __name__ == '__main__':
     seed = 42 
     decay = 10e-6
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
-    n = 2 # trigram 
+    n = 2 # bigram 
     device_type = "cuda" # "cpu"
     cfg = ModelConfig(
         n=n, 
