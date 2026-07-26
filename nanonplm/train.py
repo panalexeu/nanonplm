@@ -91,7 +91,7 @@ if __name__ == '__main__':
     # training loop 
     ema = lambda loss, ema_loss: ema_alpha*loss + (1-ema_alpha)*ema_loss 
     ema_loss = None
-    optimizer = optim.SGD(model.parameters(), lr=lr, weight_decay=decay)
+    optimizer = model.configure_optimizer(lr=lr, weight_decay=decay)
     t0 = time.perf_counter()
     for i in range(0, steps): 
         optimizer.zero_grad()

@@ -102,4 +102,23 @@ class Model(nn.Module):
         model.load_state_dict(ckpt['model'])
 
         return model 
+
+    def configure_optimizer(self, lr: float, weight_decay: float): 
+        """
+        from paper: "...R is a weight decay penalty applied only to the weights 
+        of the neural network and to the C matrix, not to the biases." 
+        """
+        decay, no_decay = [], [] 
+        for name, param in self.named_parameters(): 
+            if 'bias' in name: 
+                no_decay.append(param)
+            else: 
+                decay.append(param)
+
+        optimizer = torch.optim.SGD(params=[
+            {'params': decay, 'weight_decay': weight_decay}, 
+            {'params': no_decay, 'weight_decay': 0}
+        ], lr=lr)
+
+        return optimizer 
     
