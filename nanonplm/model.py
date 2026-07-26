@@ -33,6 +33,7 @@ class Model(nn.Module):
             bias=True
         ) 
         self.vocab_table = vocab_table
+        self.r_vocab_table = list(vocab_table.keys())
 
         self.apply(self._init_weights)
 
@@ -66,19 +67,24 @@ class Model(nn.Module):
         self, 
         x: torch.Tensor,
         max_tokens: int, 
-        stop_seq: list[int] = []
+        stop_seq: list[int] = [], 
+        t: float = 0.5, 
+        stream: bool = True
     ): 
-        # for now just greedy decoding 
         sampled = []
         for _ in range(max_tokens): 
             y = self.__call__(x, target=None)[0]
+            y /= t
             probs = F.softmax(y, dim=-1)
-            top_prob = probs.argmax(dim=-1)
-            if top_prob in stop_seq: 
+            sample = torch.multinomial(probs, num_samples=1)
+            if sample in stop_seq: 
                 break
 
-            sampled.append(top_prob)
-            x = torch.tensor(x[1:].tolist() + [top_prob])
+            sampled.append(sample)
+            x = torch.tensor(x[1:].tolist() + [sample])
+
+            if stream: 
+                print(self.r_vocab_table[sample] , end="")
 
         return sampled 
 

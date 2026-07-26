@@ -54,12 +54,12 @@ if __name__ == '__main__':
     
     # model/training config 
     lr = 1e-3
-    steps = 1_000_000 # 10 ~epochs over (297_832 / 3 (trigram))
+    steps = 3_000_000 # 30 ~epochs over (297_832 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
     seed = 42 
-    decay = 1e-5
+    decay = 1e-4
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
     n = 2 # bigram 
     device_type = "cuda" # "cpu"
