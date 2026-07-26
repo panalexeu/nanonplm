@@ -37,7 +37,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="data ingestion pipeline: preprocessing -> neural prob. language model training")
     parser.add_argument("--user_id", type=str, default=None)
     parser.add_argument("--data_dir", type=str, default='./data') 
-    parser.add_argument("--preproc_export_path", type=str, default='./out.txt')
     args = parser.parse_args() 
 
     # preproc_ = TgDataLoadStrategy(
