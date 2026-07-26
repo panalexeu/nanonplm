@@ -53,13 +53,13 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
-    lr = 10e-3
+    lr = 1e-4
     steps = 1_042_842 # 3 ~epochs over (1042842 / 3 (trigram))
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
     seed = 42 
-    decay = 10e-5
+    decay = 10e-6
     ema_alpha = 0.001  # avgs loss over ~1000 steps 
     n = 2 # trigram 
     device_type = "cuda" # "cpu"
