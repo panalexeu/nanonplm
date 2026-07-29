@@ -87,7 +87,7 @@ class BrownDataLoadStrategy(BaseDataLoadStrategy):
             
             os.remove(self.brown_zpath)
         
-    def __call__(self,):
+    def __call__(self, merge: bool = True):
         tokens = []
         files = [f for f in self.brown_path.iterdir() if re.match(pattern=self.fileids, string=f.stem)]  
         for f in files: 
@@ -95,6 +95,12 @@ class BrownDataLoadStrategy(BaseDataLoadStrategy):
             tokens.extend(
                 self._get_tokens(text)
             )
+
+        # from paper: "Rare words with frequency ≤ 3 were merged into a single symbol, reducing
+        # the vocabulary size to |V | = 16, 383" 
+        if merge: 
+            self._merge_rare_tokens(tokens)
+
         # to keep base class interface resulting tokens 
         # are joined with space symbol *for now 
         return ' '.join(tokens) 
@@ -138,3 +144,12 @@ class BrownDataLoadStrategy(BaseDataLoadStrategy):
             return (s[:loc], s[loc+len(sep):].upper())
         else: 
             return (s, None)
+
+    def _merge_rare_tokens(self, tokens: list[str], merge_count: int = 3) -> str: 
+        count_ = dict()
+        for t in tokens:
+            count_[t] = count_.get(t, 0) + 1
+
+        merge_token = "<merge>"
+        for i, t in enumerate(tokens): 
+            if count_[t] <= merge_count: tokens[i] = merge_token
