@@ -1,8 +1,11 @@
 import os 
+import re 
 import json
+import zipfile 
 import requests 
-from abc import abstractmethod, ABC
 from pathlib import Path 
+from abc import abstractmethod, ABC
+
 
 class BaseDataLoadStrategy(ABC): 
     @abstractmethod
@@ -57,4 +60,36 @@ class TinyShaekspereDataLoadStrategy(BaseDataLoadStrategy):
     def __call__(self) -> str:
         with open(self.shaek_path, 'r') as f: 
             return f.read() 
-         
+
+class BrownDataLoadStrategy(BaseDataLoadStrategy): 
+    def __init__(self, data_dir: Path): 
+        if not os.path.exists(data_dir): 
+            os.mkdir(data_dir) 
+
+        self.brown_url = 'https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/brown.zip' 
+        self.brown_zpath = data_dir / "brown.zip"
+        self.brown_path = data_dir / "brown"
+        self.fileids = r'c[a-z]\d\d'
+        
+        if not os.path.exists(self.brown_path):
+            res = requests.get(self.brown_url)
+            with open(self.brown_zpath, 'wb') as f: 
+                f.write(res.content)
+            
+            with zipfile.ZipFile(self.brown_zpath) as z: 
+                z.extractall(data_dir)
+            
+            os.remove(self.brown_zpath)
+        
+    def __call__(self,):
+        contents = []
+        files = [f for f in self.brown_path.iterdir() if re.match(pattern=self.fileids, string=f.stem)]  
+        for f in files: 
+            contents.append(f.read_text(encoding='ascii'))
+        breakpoint()
+
+
+if __name__ == '__main__': 
+    brown = BrownDataLoadStrategy(data_dir=Path('./data/'))
+    brown.__call__()
+     
