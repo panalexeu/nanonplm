@@ -126,7 +126,7 @@ if __name__ == '__main__':
             dt = t1 - t0 
             t0 = t1 
 
-            print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s, lr: {new_lr}")
+            print(f"step: {i}, train loss {loss.item():.4f}, ema loss (alpha={ema_alpha}): {ema_loss:.4f}, dt: {dt:.2f}s, lr: {new_lr:.5f}")
 
         # save ckpt 
         if (i % ckpt_save_step == 0 and i != 0) or (i == steps-1): 
