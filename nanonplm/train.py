@@ -10,10 +10,13 @@ from pathlib import Path
 from dataclasses import asdict
 
 import torch 
-import torch.optim as optim 
 
 from .model import ModelConfig, Model
-from .data import TgDataLoadStrategy, TinyShaekspereDataLoadStrategy
+from .data import (
+    TgDataLoadStrategy, 
+    BrownDataLoadStrategy,
+    TinyShaekspereDataLoadStrategy
+)
 from .tokenizer import BaseTokenizer
 
 
@@ -39,14 +42,15 @@ if __name__ == '__main__':
     parser.add_argument("--data_dir", type=str, default='./data') 
     args = parser.parse_args() 
 
-    # preproc_ = TgDataLoadStrategy(
+    # dataloader = TgDataLoadStrategy(
     #     data_dir=Path(args.data_dir), 
     #     id_=args.user_id 
     # )
-    preproc_ = TinyShaekspereDataLoadStrategy(data_dir=Path(args.data_dir))
+    # dataloader = TinyShaekspereDataLoadStrategy(data_dir=Path(args.data_dir))
+    dataloader = BrownDataLoadStrategy(data_dir=Path(args.data_dir))
     tokenizer = BaseTokenizer()
 
-    text = preproc_.__call__()
+    text = dataloader.__call__()
     tokens = tokenizer.__call__(text)
     vocab = set(tokens) 
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
