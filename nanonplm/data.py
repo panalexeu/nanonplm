@@ -62,6 +62,12 @@ class TinyShaekspereDataLoadStrategy(BaseDataLoadStrategy):
             return f.read() 
 
 class BrownDataLoadStrategy(BaseDataLoadStrategy): 
+    """
+    nltk implementation is used as reference. 
+    i did not install nltk directly to have less deps, 
+    and understand how Brown corpus is handled.
+    ref: https://github.com/nltk/nltk/blob/develop/nltk/corpus/__init__.py#L80-L87
+    """
     def __init__(self, data_dir: Path): 
         if not os.path.exists(data_dir): 
             os.mkdir(data_dir) 
@@ -82,14 +88,53 @@ class BrownDataLoadStrategy(BaseDataLoadStrategy):
             os.remove(self.brown_zpath)
         
     def __call__(self,):
-        contents = []
+        tokens = []
         files = [f for f in self.brown_path.iterdir() if re.match(pattern=self.fileids, string=f.stem)]  
         for f in files: 
-            contents.append(f.read_text(encoding='ascii'))
-        breakpoint()
+            text = f.read_text(encoding='ascii') 
+            tokens.extend(
+                self._get_tokens(text)
+            )
+        # to keep base class interface resulting tokens 
+        # are joined with space symbol *for now 
+        return ' '.join(tokens) 
 
+    def _get_tokens(self, text: str) -> list[str]: 
+        tokens = []
+        for s in self._sent_split(text):
+            for w in self._word_split(s): 
+                w, t = self._str2tuple(w)
+                tokens.append(w)
+        return tokens 
 
-if __name__ == '__main__': 
-    brown = BrownDataLoadStrategy(data_dir=Path('./data/'))
-    brown.__call__()
-     
+    def _sent_split(self, text: str): 
+        """
+        ref: 
+        1. https://github.com/nltk/nltk/blob/develop/nltk/corpus/reader/tagged.py#L45
+        2. https://github.com/nltk/nltk/blob/develop/nltk/tokenize/regexp.py#L122-L127
+        """
+        pattern = r'\n' 
+        sents = [s for s in re.split(pattern=pattern, string=text) if s]
+        return sents 
+
+    def _word_split(self, text: str): 
+        """
+        ref: 
+        1. https://github.com/nltk/nltk/blob/develop/nltk/corpus/reader/tagged.py#L44
+        2. https://github.com/nltk/nltk/blob/develop/nltk/tokenize/regexp.py#L156-L169
+        3. https://github.com/nltk/nltk/blob/develop/nltk/tokenize/regexp.py#L122-L127
+        """
+        pattern = r'\s+'
+        words = [tok for tok in re.split(pattern=pattern, string=text) if tok]
+        return words 
+
+    def _str2tuple(self, s: str, sep='/') -> tuple: 
+        """
+        ref: 
+        1. https://github.com/nltk/nltk/blob/develop/nltk/tag/util.py#L10
+        """
+        loc = s.rfind(sep)
+        if loc >= 0: 
+            return (s[:loc], s[loc+len(sep):].upper())
+        else: 
+            return (s, None)
