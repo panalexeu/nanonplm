@@ -3,6 +3,7 @@ the training loop implementation (and model implementation too)
 uses SGD (no batching) as it was done in the paper. 
 """
 import os 
+import math
 import time 
 import random
 import argparse
@@ -39,7 +40,8 @@ def _save_ckpt(model_state_dict: dict, vocab_table: dict, model_cfg: dict, ckpt_
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser(description="data ingestion pipeline: preprocessing -> neural prob. language model training")
     parser.add_argument("--user_id", type=str, default=None)
-    parser.add_argument("--data_dir", type=str, default='./data') 
+    parser.add_argument("--data_dir", type=str, default='./data')
+    parser.add_argument("--test_cutoff", type=float, default=0.9) 
     args = parser.parse_args() 
 
     # dataloader = TgDataLoadStrategy(
@@ -52,6 +54,9 @@ if __name__ == '__main__':
 
     text = dataloader.__call__()
     tokens = tokenizer.__call__(text)
+    test_cutoff = int(len(tokens) * args.test_cutoff) + 1 
+    train_tokens = tokens[:test_cutoff] 
+    test_tokens = tokens[test_cutoff:]
     vocab = set(tokens) 
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
@@ -59,7 +64,7 @@ if __name__ == '__main__':
     # basically repeats config for:MLP9 (table 1), Brown
     lr = 1e-2
     r = 1e-7
-    steps = 1_000_000 # 20 ~epochs over (297_832 / 6 (6gram))
+    steps = 1 # 20 ~epochs over (1_061_825 / 6 (6gram) ~176_971)
     log_step = 1_000
     ckpt_save_step = 100_000
     ckpt_dir = Path('./out')
@@ -86,7 +91,9 @@ if __name__ == '__main__':
     print("--------------------------")
     print(f"total model params: {model._get_num_params()}")
     print(f"vocab size: {len(vocab)}")
-    print(f"data tokens: {len(tokens)}")
+    print(f"total tokens: {len(tokens)}")
+    print(f"train tokens: {len(train_tokens)}")
+    print(f"test tokens: {len(test_tokens)}")
     print("--------------------------")
     input("press Enter to start training: ")
 
@@ -131,3 +138,21 @@ if __name__ == '__main__':
                 ckpt_path=ckpt_path
             )
             print(f"saved ckpt at: {ckpt_path}")
+
+    # ppl eval 
+    if len(test_tokens) > 0: 
+        input("press Enter to evaluate on test set: ")
+        losses = []
+        model.eval()
+        for i in range(0, len(test_tokens)-n-1, n): 
+            x = test_tokens[i:i+n]
+            y = test_tokens[i+n]
+            x_ids = torch.tensor([vocab_lookup_table[t] for t in x], dtype=torch.int)
+            y_ids =  torch.tensor(vocab_lookup_table[y], dtype=torch.long)
+            x_ids, y_ids = x_ids.to(device), y_ids.to(device)
+            _, loss = model.__call__(x_ids, y_ids)
+            losses.append(loss.item())
+
+        avg_loss = sum(losses) / len(losses)
+        ppl = math.exp(avg_loss)
+        print(f"test set ppl.: {ppl:.2f}")
