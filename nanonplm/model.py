@@ -62,7 +62,6 @@ class Model(nn.Module):
 
         return x, loss
 
-
     def sample(
         self, 
         x: torch.Tensor,
