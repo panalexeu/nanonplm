@@ -64,9 +64,9 @@ if __name__ == '__main__':
     # basically repeats config for:MLP9 (table 1), Brown
     lr = 1e-2
     r = 1e-7
-    steps = 1 # 20 ~epochs over (1_061_825 / 6 (6gram) ~176_971)
+    steps = 3_539_420 # 20 ~epochs over (1_061_825 / 6 (6gram) ~176_971)
     log_step = 1_000
-    ckpt_save_step = 100_000
+    ckpt_save_step = 1_000_000
     ckpt_dir = Path('./out')
     seed = 42 
     decay = 1e-3
