@@ -75,7 +75,7 @@ class Model(nn.Module):
             y = self.__call__(x, target=None)[0]
             y /= t
             probs = F.softmax(y, dim=-1)
-            sample = torch.multinomial(probs, num_samples=1)
+            sample = torch.multinomial(probs, num_samples=1).item()
             if sample in stop_seq: 
                 break
 
