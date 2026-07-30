@@ -39,17 +39,11 @@ def _save_ckpt(model_state_dict: dict, vocab_table: dict, model_cfg: dict, ckpt_
 
 if __name__ == '__main__': 
     parser = argparse.ArgumentParser(description="data ingestion pipeline: preprocessing -> neural prob. language model training")
-    parser.add_argument("--user_id", type=str, default=None)
     parser.add_argument("--data_dir", type=str, default='./data')
     parser.add_argument("--test_cutoff", type=float, default=0.9) 
     args = parser.parse_args() 
 
-    # dataloader = TgDataLoadStrategy(
-    #     data_dir=Path(args.data_dir), 
-    #     id_=args.user_id 
-    # )
-    # dataloader = TinyShaekspereDataLoadStrategy(data_dir=Path(args.data_dir))
-    dataloader = BrownDataLoadStrategy(data_dir=Path(args.data_dir))
+    dataloader = TinyShaekspereDataLoadStrategy(data_dir=Path(args.data_dir))
     tokenizer = BaseTokenizer()
 
     text = dataloader.__call__()
@@ -61,10 +55,10 @@ if __name__ == '__main__':
     vocab_lookup_table = {v: i for i, v in  enumerate(vocab)}
     
     # model/training config 
-    # basically repeats config for:MLP9 (table 1), Brown
+    # basically repeats config for:MLP9 (table 1), brown but for tiny shaekspere data  
     lr = 1e-2
     r = 1e-7
-    steps = 3_539_420 # 20 ~epochs over (1_061_825 / 6 (6gram) ~176_971)
+    steps = 1_000_000 # 20 ~epochs over (297_832 / 6 (6gram)) ~= 50000
     log_step = 1_000
     ckpt_save_step = 1_000_000
     ckpt_dir = Path('./out')
