@@ -24,7 +24,7 @@ from .tokenizer import BaseTokenizer
 def _get_sample(tokens: list[str], n: int, vocab_table: dict) -> tuple[torch.Tensor, torch.Tensor]:
     idx = random.randint(0, len(tokens)-1-n)
     x, y = tokens[idx:idx+n], tokens[idx+n]
-    x_ids = torch.tensor([vocab_table[t] for t in x], dtype=torch.int)
+    x_ids = torch.tensor([vocab_table[t] for t in x], dtype=torch.long)
     y_ids =  torch.tensor(vocab_table[y], dtype=torch.long)
 
     return x_ids, y_ids 
@@ -147,7 +147,7 @@ if __name__ == '__main__':
         for i in range(0, len(test_tokens)-n-1, n): 
             x = test_tokens[i:i+n]
             y = test_tokens[i+n]
-            x_ids = torch.tensor([vocab_lookup_table[t] for t in x], dtype=torch.int)
+            x_ids = torch.tensor([vocab_lookup_table[t] for t in x], dtype=torch.long)
             y_ids =  torch.tensor(vocab_lookup_table[y], dtype=torch.long)
             x_ids, y_ids = x_ids.to(device), y_ids.to(device)
             _, loss = model.__call__(x_ids, y_ids)
