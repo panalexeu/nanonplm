@@ -25,7 +25,7 @@ python -m nanonplm.sample <ckpt_path>
 
 **Results**
 
-Training the model (1_847_266 params) with the default training script on tiny-shakespeare, on a test set of the last 29,783 unseen tokens, achieves a ppl value of 136.44 (vocab size: 13,986).
+Training the model (1,847,266 params) with the default training script on tiny-shakespeare, on a test set of the last 29,783 unseen tokens, achieves a ppl value of 136.44 (vocab size: 13,986).
 Sampling with the default sampling script (t=0.7) produces the following results, which look quite fun — I'd highlight how the model learned the structure of tiny-shakespeare (role:\ntext):
 
 ```text 
