@@ -11,7 +11,7 @@ The implementation tries to stay as close to the paper as possible by:
 3. Using the paper's learning rate update rule;
 4. Using true SGD.
 
-**Usage:**
+**Usage**
 
 Training:
 ```bash
@@ -21,4 +21,39 @@ python -m nanonplm.train --data_dir ./data --test_cutoff 0.9
 Sampling:
 ```bash
 python -m nanonplm.sample <ckpt_path>
+```
+
+**Results**
+
+Training the model with the default training script on tiny-shakespeare, on a test set of the last 29,783 unseen tokens, achieves a ppl value of 136.44 (vocab size: 13,986).
+Sampling with the default sampling script (t=0.7) produces the following results, which look quite fun — I'd highlight how the model learned the structure of tiny-shakespeare (role:\ntext):
+
+```text 
+to be or not to us
+o, if i come,
+for the death, mysword,
+not northumberland, the heart,
+for my lord, and one's will;
+to kam at the king as all a world,
+this, therefore i do in the king
+my very the daughter?
+
+second vincentio:
+what is their hands,
+which alligator not't: the way for
+in the henry, and
+as the beetle
+in the throne and myt
+have, by is your brother,
+all lord, good by the across
+pray, and, let he turn
+my all his ghostly:
+i say i will, my king!
+
+norfolk:
+o, his great death,
+and confess this haththough,
+for then shall a sister
+old'd to the word, and i would not so
+...
 ```
