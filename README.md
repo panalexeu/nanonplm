@@ -57,3 +57,5 @@ for then shall a sister
 old'd to the word, and i would not so
 ...
 ```
+
+This model checkpoint is stored under `./out/tiny_shk.pt`.
